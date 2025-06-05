@@ -4,6 +4,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import Menu from "./pages/menu/Menu";
 import Orders from "./pages/orders/Orders";
 import Table from "./pages/table/Table";
+import CategoryDetails from "./pages/menu/CategoryDetails";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/tables" element={<Table />} />
           <Route path="/menu" element={<Menu />} />
+          <Route path="/menu/:id" element={<CategoryDetails />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/settings" element={<Dashboard />} />
         </Route>
