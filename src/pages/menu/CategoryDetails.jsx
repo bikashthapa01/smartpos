@@ -1,29 +1,26 @@
 // pages/menu/CategoryDetails.jsx
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { fetchItemsByCategory, fetchCategoryById } from "../../data/api";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
 
 import Loading from "../../components/Loading";
 import MenuItem from "./MenuItem";
+import { loadMenu } from "../../store/slices/menuSlice";
 
 const CategoryDetails = () => {
   const { id } = useParams();
-  const [items, setItems] = useState([]);
-  const [category, setCategory] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { categories, items, loading } = useSelector((state) => state.menu);
 
   useEffect(() => {
-    const fetchDetails = async () => {
-      setLoading(true);
-      const cat = await fetchCategoryById(id);
-      const relatedItems = await fetchItemsByCategory(id);
-      setCategory(cat);
-      setItems(relatedItems);
-      setLoading(false);
-    };
+    // Load menu only if not already loaded
+    if (categories.length === 0) {
+      dispatch(loadMenu());
+    }
+  }, [dispatch, categories.length]);
 
-    fetchDetails();
-  }, [id]);
+  const category = categories.find((cat) => cat.id === id);
+  const categoryItems = items.filter((item) => item.categoryId === id);
 
   if (loading) return <Loading text="Loading items..." />;
 
@@ -38,11 +35,11 @@ const CategoryDetails = () => {
     <div className="p-4 text-white">
       <h1 className="text-2xl font-bold mb-4">{category.name}</h1>
 
-      {items.length === 0 ? (
+      {categoryItems.length === 0 ? (
         <p className="text-slate-400">No items in this category.</p>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {items.map((item) => (
+          {categoryItems.map((item) => (
             <MenuItem key={item.id} item={item} />
           ))}
         </div>

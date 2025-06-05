@@ -116,6 +116,26 @@ const menuItems = [
     pricing: { table: 10.0, delivery: 11.0 },
     image: "/images/lamb-rogan-josh.jpg",
   },
+  {
+    id: "item11",
+    name: "Chasni Chicken Tikka",
+    description: "Slow-cooked lamb in rich tomato curry",
+    categoryId: "cat9",
+    availableFor: ["table", "delivery"],
+    available: true,
+    pricing: { table: 10.0, delivery: 11.0 },
+    image: "/images/lamb-rogan-josh.jpg",
+  },
+  {
+    id: "item12",
+    name: "Chicken Tikka Masala",
+    description: "Slow-cooked lamb in rich tomato curry",
+    categoryId: "cat9",
+    availableFor: ["table", "delivery"],
+    available: true,
+    pricing: { table: 10.0, delivery: 11.0 },
+    image: "/images/lamb-rogan-josh.jpg",
+  },
 ];
 
 export default menuItems;

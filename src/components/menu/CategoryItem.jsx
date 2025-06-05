@@ -17,7 +17,9 @@ export default function Category({ category }) {
           <h3 className="text-lg font-semibold mb-1 text-white opacity-95">
             {category.name}
           </h3>
-          <p className="text-xs opacity-70"> 6 items</p>
+          <p className="text-xs opacity-70">
+            {category.itemCount} {category.itemCount > 1 ? "Items" : "Item"}
+          </p>
         </div>
       </div>
     </Link>

@@ -3,7 +3,7 @@ import MainLayout from "./layouts/MainLayout";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Menu from "./pages/menu/Menu";
 import Orders from "./pages/orders/Orders";
-import Table from "./pages/table/Table";
+import Table from "./pages/table/Tables";
 import CategoryDetails from "./pages/menu/CategoryDetails";
 
 function App() {
