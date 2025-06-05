@@ -3,7 +3,7 @@ const tables = [
   {
     id: "table1",
     name: "Table 1",
-    status: "available", // available | occupied | billed | paid
+    status: "available", // available | occupied | billed
     currentOrderId: null,
     seats: 4,
   },
@@ -26,14 +26,7 @@ const tables = [
     name: "Table 4",
     status: "available",
     currentOrderId: null,
-    seats: 4,
-  },
-  {
-    id: "table5",
-    name: "Table 5",
-    status: "paid",
-    currentOrderId: "order_003",
-    seats: 4,
+    seats: 8,
   },
 ];
 
