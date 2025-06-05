@@ -1,10 +1,18 @@
 // src/components/Sidebar.jsx
 import { Link, useLocation } from "react-router-dom";
-import { Home, Utensils, Settings, ShoppingCart, Computer } from "lucide-react";
+import {
+  Home,
+  Utensils,
+  Settings,
+  ShoppingCart,
+  Computer,
+  GalleryHorizontal,
+} from "lucide-react";
 
 const links = [
   { to: "/dashboard", label: "Dashboard", icon: <Home size={20} /> },
   { to: "/menu", label: "Menu", icon: <Utensils size={20} /> },
+  { to: "/tables", label: "Table", icon: <GalleryHorizontal size={20} /> },
   { to: "/orders", label: "Orders", icon: <ShoppingCart size={20} /> },
   { to: "/settings", label: "Settings", icon: <Settings size={20} /> },
 ];
@@ -23,8 +31,8 @@ export default function Sidebar() {
           <Link
             key={to}
             to={to}
-            className={`flex items-center gap-3 p-2 rounded-lg transition hover:bg-slate-700 ${
-              pathname.startsWith(to) ? "bg-slate-700" : ""
+            className={`flex items-center gap-3 p-2 rounded-lg transition hover:bg-secondary-gray  font-medium font-inter ${
+              pathname.startsWith(to) ? "bg-secondary-gray" : ""
             }`}
           >
             {icon}
