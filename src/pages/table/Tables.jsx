@@ -1,13 +1,18 @@
 // pages/tables/Tables.jsx
 import { useEffect, useState } from "react";
-import { fetchTables } from "../../data/api";
 import TableCard from "../../components/tables/TableCard";
 import Loading from "../../components/Loading";
 import AssignTableModal from "../../components/tables/AssignTableModal";
+import { useDispatch, useSelector } from "react-redux";
+import { assignOrderToTable, loadTables } from "../../store/slices/tableSlice";
+import TableStatusFilter from "../../components/tables/TableStatusFilter";
+import { createOrder } from "../../store/slices/tableOrderSlice";
 
 const Tables = () => {
-  const [tables, setTables] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // use the redux here
+  const dispatch = useDispatch();
+  const { tables, loading, error } = useSelector((state) => state.table);
+
   const [filter, setFilter] = useState("available");
   const [selectedTable, setSelectedTable] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -19,26 +24,26 @@ const Tables = () => {
     setShowModal(true);
   };
 
-  // Confirm from modal
+  // Confirm from modal to assign people to table // create order and assign to table
   const handleConfirmAssign = (peopleCount) => {
     const tableId = selectedTable.id;
-    console.log(`Assigning ${peopleCount} people to table ${tableId}`);
+    // Dispatch this when assigning a table:
+    const action = createOrder({ tableId, peopleCount });
+    dispatch(action);
+
+    // Link the order ID to the table
+    dispatch(assignOrderToTable({ tableId, orderId: action.payload.id }));
+
     setShowModal(false);
   };
 
   useEffect(() => {
-    const getTables = async () => {
-      const data = await fetchTables();
-      setTables(data);
-      setLoading(false);
-    };
-    getTables();
-  }, []);
+    // dispatch the loadTables action to fetch tables
+    dispatch(loadTables());
+  }, [dispatch]);
 
   if (loading) return <Loading text="Loading tables..." />;
-
-  // Only these statuses now—“paid” is not a table status
-  const statuses = ["all", "available", "occupied", "billed"];
+  if (error) return <p className="text-red-500">{error}</p>;
 
   // Filter out by selected status (or show all if filter === "all")
   const filteredTables =
@@ -48,22 +53,7 @@ const Tables = () => {
     <div className="p-4">
       <h1 className="text-2xl font-bold text-white mb-4">Table Manager</h1>
 
-      {/* Filter Bar */}
-      <div className="flex flex-wrap gap-2 mb-6 border-b border-secondary-gray pb-4">
-        {statuses.map((status) => (
-          <button
-            key={status}
-            onClick={() => setFilter(status)}
-            className={`px-3 py-1 rounded-full capitalize font-medium transition cursor-pointer ${
-              filter === status
-                ? "bg-blue-600 text-white"
-                : "bg-slate-200 text-slate-700 hover:bg-slate-300"
-            }`}
-          >
-            {status}
-          </button>
-        ))}
-      </div>
+      <TableStatusFilter filter={filter} setFilter={setFilter} />
 
       {/* No Tables Found (after filter) */}
       {filteredTables.length === 0 ? (

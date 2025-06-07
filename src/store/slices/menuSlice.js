@@ -19,8 +19,13 @@ const menuSlice = createSlice({
     categories: [],
     items: [],
     loading: false,
+    selectedCategoryId: null, // <-- track selected category
   },
-  reducers: {},
+  reducers: {
+    setSelectedCategory: (state, action) => {
+      state.selectedCategoryId = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(loadMenu.pending, (state) => {
@@ -29,7 +34,6 @@ const menuSlice = createSlice({
       .addCase(loadMenu.fulfilled, (state, action) => {
         const { categories, items } = action.payload;
 
-        // Enrich categories with itemCount
         const enrichedCategories = categories.map((cat) => {
           const count = items.filter(
             (item) => item.categoryId === cat.id
@@ -40,8 +44,12 @@ const menuSlice = createSlice({
         state.categories = enrichedCategories;
         state.items = items;
         state.loading = false;
+
+        // Set first category as selected by default
+        state.selectedCategoryId = enrichedCategories[0]?.id || null;
       });
   },
 });
 
+export const { setSelectedCategory } = menuSlice.actions;
 export default menuSlice.reducer;

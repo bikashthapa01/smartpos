@@ -2,11 +2,17 @@ import { useState } from "react";
 
 const AssignTableModal = ({ table, onConfirm, onClose }) => {
   const [people, setPeople] = useState("");
+  const [error, setError] = useState("");
 
   const handleSubmit = () => {
     const count = parseInt(people);
-    if (isNaN(count) || count <= 0) return alert("Enter a valid number.");
-    if (count > table.seats) return alert("Too many people for this table.");
+    if (isNaN(count) || count <= 0)
+      return setError("Please enter a valid number of people.");
+    if (count > table.seats) {
+      setError(`Cannot assign more than ${table.seats} people.`);
+      return;
+    }
+    setError("");
     onConfirm(count);
   };
 
@@ -22,7 +28,9 @@ const AssignTableModal = ({ table, onConfirm, onClose }) => {
           type="number"
           value={people}
           onChange={(e) => setPeople(e.target.value)}
-          className="w-full bg-secondary-gray text-white border border-slate-600 rounded px-3 py-2 mb-4 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={`w-full bg-secondary-gray text-white border ${
+            error ? "border-red-600" : "border-slate-600"
+          } rounded px-3 py-2 mb-4 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500`}
           placeholder="Enter count"
         />
 
