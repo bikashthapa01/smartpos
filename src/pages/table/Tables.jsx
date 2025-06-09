@@ -7,9 +7,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { assignOrderToTable, loadTables } from "../../store/slices/tableSlice";
 import TableStatusFilter from "../../components/tables/TableStatusFilter";
 import { createOrder } from "../../store/slices/tableOrderSlice";
+import { useNavigate } from "react-router-dom";
 
 const Tables = () => {
   // use the redux here
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { tables, loading, error } = useSelector((state) => state.table);
 
@@ -33,7 +35,7 @@ const Tables = () => {
 
     // Link the order ID to the table
     dispatch(assignOrderToTable({ tableId, orderId: action.payload.id }));
-
+    navigate(`/table/order/${action.payload.id}`);
     setShowModal(false);
   };
 

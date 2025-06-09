@@ -1,16 +1,24 @@
 // store/slices/tableOrderSlice.js
-import { createSlice, nanoid } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, nanoid } from "@reduxjs/toolkit";
+import { loadFromStorage, saveToStorage } from "../../utils/localStorage";
+
+export const loadActiveOrders = createAsyncThunk("tableOrder/loadOrder", () => {
+  return loadFromStorage("activeOrders", []);
+});
 
 const tableOrderSlice = createSlice({
   name: "tableOrder",
   initialState: {
     activeOrders: [],
+    loading: false,
+    error: null,
   },
 
   reducers: {
     createOrder: {
       reducer(state, action) {
         state.activeOrders.push(action.payload);
+        saveToStorage("activeOrders", state.activeOrders);
       },
       prepare({ tableId, people }) {
         return {
@@ -36,6 +44,8 @@ const tableOrderSlice = createSlice({
         } else {
           order.items.push({ ...item, qty: 1 });
         }
+
+        saveToStorage("activeOrders", state.activeOrders);
       }
     },
 
@@ -50,6 +60,8 @@ const tableOrderSlice = createSlice({
           } else {
             order.items = order.items.filter((i) => i.id !== itemId);
           }
+
+          saveToStorage("activeOrders", state.activeOrders);
         }
       }
     },
@@ -59,8 +71,32 @@ const tableOrderSlice = createSlice({
       const order = state.activeOrders.find((o) => o.id === orderId);
       if (order) {
         order.items = order.items.filter((i) => i.id !== itemId);
+        saveToStorage("activeOrders", state.activeOrders);
       }
     },
+    cancelOrder: (state, action) => {
+      const { orderId } = action.payload;
+      state.activeOrders = state.activeOrders.filter(
+        (order) => order.id !== orderId
+      );
+      saveToStorage("activeOrders", state.activeOrders);
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(loadActiveOrders.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(loadActiveOrders.fulfilled, (state, action) => {
+        state.activeOrders = action.payload;
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(loadActiveOrders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      });
   },
 });
 
@@ -69,6 +105,7 @@ export const {
   addItemToOrder,
   decrementItem,
   removeItemFromOrder,
+  cancelOrder,
 } = tableOrderSlice.actions;
 
 export default tableOrderSlice.reducer;

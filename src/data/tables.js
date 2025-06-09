@@ -10,15 +10,15 @@ const tables = [
   {
     id: "table2",
     name: "Table 2",
-    status: "occupied",
-    currentOrderId: "order_001",
+    status: "available",
+    currentOrderId: null,
     seats: 2,
   },
   {
     id: "table3",
     name: "Table 3",
-    status: "billed",
-    currentOrderId: "order_002",
+    status: "available",
+    currentOrderId: null,
     seats: 6,
   },
   {

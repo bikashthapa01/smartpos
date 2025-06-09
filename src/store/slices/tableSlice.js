@@ -1,10 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchTables } from "../../data/api";
+import { loadFromStorage, saveToStorage } from "../../utils/localStorage";
 
 // Async thunk to load tables from a simulated API
 export const loadTables = createAsyncThunk("table/loadTables", async () => {
-  const data = await fetchTables();
-  return data;
+  //   const data = await fetchTables();
+  //   return data;
+  return loadFromStorage("tables", await fetchTables());
 });
 
 const tableSlice = createSlice({
@@ -23,6 +25,7 @@ const tableSlice = createSlice({
       if (table) {
         table.status = "occupied";
         table.currentOrderId = orderId;
+        saveToStorage("tables", state.tables);
       }
     },
 
@@ -36,6 +39,8 @@ const tableSlice = createSlice({
           table.currentOrderId = null;
         }
       }
+
+      saveToStorage("tables", state.tables);
     },
   },
 

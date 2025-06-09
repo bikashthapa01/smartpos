@@ -1,28 +1,26 @@
-import { useState } from "react";
-
-const MenuItemCard = ({ item }) => {
-  const [qty, setQty] = useState(0);
-
-  const increment = () => setQty(qty + 1);
-  const decrement = () => qty > 0 && setQty(qty - 1);
-
+const MenuItemCard = ({ item, quantity = 0, onAdd, onRemove }) => {
   return (
-    <div className="bg-secondary-gray p-4 rounded-xl shadow flex flex-col gap-2">
+    <div
+      className={` p-4 rounded-xl shadow flex flex-col gap-2 ${
+        quantity > 0 ? "bg-secondary-gray" : "bg-secondary-gray/50"
+      }`}
+    >
       <h3 className="text-lg font-bold">{item.name}</h3>
       <p className="text-sm text-slate-400">£{item.pricing.table.toFixed(2)}</p>
 
       {item.available ? (
-        <div className="flex items-center justify-between mt-2">
+        <div className="flex items-center justify-end gap-4 mt-2">
           <button
-            onClick={decrement}
-            className="px-3 py-1 bg-white/10 rounded text-white text-lg"
+            onClick={() => onRemove?.(item)}
+            disabled={quantity === 0}
+            className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded text-white text-lg border border-red-50 disabled:opacity-50"
           >
             −
           </button>
-          <span className="text-lg">{qty}</span>
+          <span className="text-lg p-1">{quantity}</span>
           <button
-            onClick={increment}
-            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-white text-lg"
+            onClick={() => onAdd?.(item)}
+            className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded text-white text-lg border border-red-50"
           >
             +
           </button>

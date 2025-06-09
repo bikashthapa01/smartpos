@@ -1,12 +1,23 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import MenuItemCard from "./MenuItemCard";
+import {
+  addItemToOrder,
+  decrementItem,
+} from "../../../store/slices/tableOrderSlice";
 
-const MenuItems = () => {
+const MenuItems = ({ order }) => {
+  const dispatch = useDispatch();
   const { items, selectedCategoryId } = useSelector((state) => state.menu);
 
   const filtered = items.filter(
     (item) => item.categoryId === selectedCategoryId
   );
+
+  // Prepare a map of itemId → quantity from the order
+  const itemQuantities = order.items.reduce((acc, item) => {
+    acc[item.id] = item.qty;
+    return acc;
+  }, {});
 
   if (!selectedCategoryId)
     return <p className="text-slate-400">Select a category to view items.</p>;
@@ -17,7 +28,15 @@ const MenuItems = () => {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
       {filtered.map((item) => (
-        <MenuItemCard key={item.id} item={item} />
+        <MenuItemCard
+          key={item.id}
+          item={item}
+          quantity={itemQuantities[item.id] || 0}
+          onAdd={() => dispatch(addItemToOrder({ orderId: order.id, item }))}
+          onRemove={() =>
+            dispatch(decrementItem({ orderId: order.id, itemId: item.id }))
+          }
+        />
       ))}
     </div>
   );
