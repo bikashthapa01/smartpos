@@ -1,13 +1,15 @@
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { Trash } from "lucide-react";
+import { useState } from "react";
+
+import ConfirmModal from "./ConfirmModal";
+import { updateTableStatus } from "../../../store/slices/tableSlice";
 import {
   removeItemFromOrder,
   cancelOrder,
+  updateOrderStatus,
 } from "../../../store/slices/tableOrderSlice";
-import { Trash } from "lucide-react";
-import { useState } from "react";
-import ConfirmModal from "./ConfirmModal";
-import { updateTableStatus } from "../../../store/slices/tableSlice";
-import { useNavigate } from "react-router-dom";
 
 const TAX_RATE = 0.1; // 10% tax
 
@@ -22,11 +24,21 @@ const Cart = ({ order }) => {
 
   const handlePlaceOrder = () => {
     // Logic to place the order
+    // here we send the order to print the kitchen in thermal printer
+    dispatch(updateOrderStatus({ orderId: order.id, status: "placed" }));
   };
 
   const handleCancelOrder = () => {
     // Logic to cancel the order
     setShowConfirmation(true);
+  };
+
+  const handleGenerateBill = () => {
+    // Logic to generate the bill
+    // and update the order/table status to billed
+
+    dispatch(updateOrderStatus({ orderId: order.id, status: "billed" }));
+    dispatch(updateTableStatus({ tableId: order.tableId, status: "billed" }));
   };
 
   const confirmCancel = () => {
@@ -36,7 +48,6 @@ const Cart = ({ order }) => {
     );
     navigate("/tables");
     setShowConfirmation(false);
-    // Optionally redirect to /tables
   };
 
   const subtotal = order.items.reduce(
@@ -101,12 +112,44 @@ const Cart = ({ order }) => {
           <span>£{total.toFixed(2)}</span>
         </div>
 
-        <button
-          className="w-full mt-3 bg-white text-primary-black rounded-full px-4 py-2 hover:bg-gray-200 transition-colors"
-          onClick={handlePlaceOrder}
-        >
-          Place Order
-        </button>
+        {order.status === "active" && (
+          <button
+            className="w-full mt-3 bg-white text-black rounded-full px-4 py-2 hover:bg-gray-200 disabled:opacity-50 "
+            onClick={handlePlaceOrder}
+            disabled={order.items.length === 0}
+            title={order.items.length === 0 ? "Add items to place order" : ""}
+          >
+            Place Order
+          </button>
+        )}
+
+        {order.status === "placed" && (
+          <div className="flex flex-col gap-2">
+            <div className="text-green-400 font-medium text-center">
+              Order Placed ✅
+            </div>
+            <button
+              className="w-full mt-2 bg-yellow-500 text-white rounded-full px-4 py-2 hover:bg-yellow-600"
+              onClick={handleGenerateBill}
+            >
+              Generate Bill
+            </button>
+          </div>
+        )}
+
+        {order.status === "billed" && (
+          <div className="flex flex-col gap-2">
+            <div className="text-yellow-400 font-medium text-center">
+              Bill Ready 🧾
+            </div>
+            <button
+              className="w-full mt-2 bg-blue-500 text-white rounded-full px-4 py-2 hover:bg-blue-600"
+              onClick={() => navigate(`/table/order/${order.id}/bill`)}
+            >
+              View Bill
+            </button>
+          </div>
+        )}
       </div>
       {showConfirmation && (
         <ConfirmModal

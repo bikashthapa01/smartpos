@@ -28,7 +28,12 @@ const tableOrderSlice = createSlice({
             people,
             status: "active",
             items: [],
+            discount: null,
+            totalAmount: 0,
+            tax: 0,
             createdAt: new Date().toISOString(),
+            placedAt: null,
+            paidAt: null,
           },
         };
       },
@@ -81,6 +86,26 @@ const tableOrderSlice = createSlice({
       );
       saveToStorage("activeOrders", state.activeOrders);
     },
+
+    updateOrderStatus: (state, action) => {
+      const { orderId, status, paidAt, totalPaid, paymentMethod, discount } =
+        action.payload;
+      const order = state.activeOrders.find((o) => o.id === orderId);
+      if (order) {
+        order.status = status;
+
+        if (status === "placed") {
+          order.placedAt = new Date().toISOString();
+        } else if (status === "paid") {
+          order.paidAt = paidAt || new Date().toISOString();
+          order.totalPaid = totalPaid;
+          order.paymentMethod = paymentMethod;
+          order.discount = discount || null;
+        }
+
+        saveToStorage("activeOrders", state.activeOrders);
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -106,6 +131,7 @@ export const {
   decrementItem,
   removeItemFromOrder,
   cancelOrder,
+  updateOrderStatus,
 } = tableOrderSlice.actions;
 
 export default tableOrderSlice.reducer;

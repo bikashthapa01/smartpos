@@ -6,6 +6,7 @@ import Orders from "./pages/orders/Orders";
 import Table from "./pages/table/Tables";
 import CategoryDetails from "./pages/menu/CategoryDetails";
 import TableOrders from "./pages/table/TableOrders";
+import TableBill from "./pages/table/TableBill";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/tables" element={<Table />} />
           <Route path="/table/order/:orderId" element={<TableOrders />} />
+          <Route path="/table/order/:orderId/bill" element={<TableBill />} />
           <Route path="/menu" element={<Menu />} />
           <Route path="/menu/:id" element={<CategoryDetails />} />
           <Route path="/orders" element={<Orders />} />
