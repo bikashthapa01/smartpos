@@ -1,4 +1,5 @@
 const menuCategories = [
+  { id: "cat0", name: "Cold Starters", color: "#facc15", icon: "Utensils" },
   { id: "cat1", name: "Starters", color: "#facc15", icon: "Utensils" },
   { id: "cat2", name: "Main Course", color: "#f97316", icon: "Drumstick" },
   { id: "cat3", name: "Breads", color: "#22d3ee", icon: "Sandwich" },

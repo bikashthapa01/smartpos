@@ -9,6 +9,8 @@ const MenuItems = ({ order }) => {
   const dispatch = useDispatch();
   const { items, selectedCategoryId } = useSelector((state) => state.menu);
 
+  const isBiled = order.status === "billed";
+
   const filtered = items.filter(
     (item) => item.categoryId === selectedCategoryId
   );
@@ -32,10 +34,15 @@ const MenuItems = ({ order }) => {
           key={item.id}
           item={item}
           quantity={itemQuantities[item.id] || 0}
-          onAdd={() => dispatch(addItemToOrder({ orderId: order.id, item }))}
-          onRemove={() =>
-            dispatch(decrementItem({ orderId: order.id, itemId: item.id }))
-          }
+          onAdd={() => {
+            if (isBiled) return;
+            dispatch(addItemToOrder({ orderId: order.id, item }));
+          }}
+          onRemove={() => {
+            if (isBiled) return;
+            dispatch(decrementItem({ orderId: order.id, itemId: item.id }));
+          }}
+          disabled={isBiled}
         />
       ))}
     </div>

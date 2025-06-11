@@ -1,4 +1,4 @@
-const MenuItemCard = ({ item, quantity = 0, onAdd, onRemove }) => {
+const MenuItemCard = ({ item, quantity = 0, onAdd, onRemove, disabled }) => {
   return (
     <div
       className={` p-4 rounded-xl shadow flex flex-col gap-2 ${
@@ -12,13 +12,14 @@ const MenuItemCard = ({ item, quantity = 0, onAdd, onRemove }) => {
         <div className="flex items-center justify-end gap-4 mt-2">
           <button
             onClick={() => onRemove?.(item)}
-            disabled={quantity === 0}
             className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded text-white text-lg border border-red-50 disabled:opacity-50"
+            disabled={disabled || quantity === 0}
           >
             −
           </button>
           <span className="text-lg p-1">{quantity}</span>
           <button
+            disabled={disabled || !item.available}
             onClick={() => onAdd?.(item)}
             className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded text-white text-lg border border-red-50"
           >

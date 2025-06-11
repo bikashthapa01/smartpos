@@ -37,6 +37,9 @@ const TableBill = () => {
 
   const table = tables.find((t) => t.id === order.tableId);
   const formattedDate = new Date(order.createdAt).toLocaleString();
+  const placedDate = order.placedAt
+    ? new Date(order.placedAt).toLocaleString()
+    : "—";
 
   const subtotal = order.items.reduce(
     (sum, item) => sum + item.qty * item.pricing.table,
@@ -69,7 +72,6 @@ const TableBill = () => {
         },
       })
     );
-
     dispatch(
       updateTableStatus({
         tableId: order.tableId,
@@ -77,52 +79,52 @@ const TableBill = () => {
         currentOrderId: null,
       })
     );
-
     navigate("/tables");
   };
 
   return (
     <div className="min-h-screen bg-primary-black text-white p-6">
-      <div className="max-w-2xl mx-auto bg-secondary-gray rounded-xl shadow-lg p-6 space-y-6">
-        {/* Header */}
-        <div className="flex justify-between items-center border-b border-slate-600 pb-4">
-          <div>
-            <h1 className="text-2xl font-bold">Bill Summary</h1>
+      <div className="max-w-5xl mx-auto grid lg:grid-cols-2 gap-8 bg-secondary-gray rounded-xl shadow-lg p-6">
+        {/* Order Summary */}
+        <div className="space-y-6 border-r border-slate-700 pr-6">
+          <div className="space-y-1">
+            <h2 className="text-2xl font-bold">Order Summary</h2>
             <p className="text-slate-400 text-sm">
               Order ID: #{order.id.slice(0, 6)}...
             </p>
             <p className="text-slate-400 text-sm">
               Table: {table?.name || order.tableId} • {order.people} People
             </p>
+            <p className="text-slate-400 text-sm">Created: {formattedDate}</p>
+            <p className="text-slate-400 text-sm">Placed At: {placedDate}</p>
+            <p className="text-slate-400 text-sm">Server: —</p>
           </div>
-          <div className="text-right">
-            <p className="text-slate-300 text-sm">Created At:</p>
-            <p className="font-semibold text-sm">{formattedDate}</p>
+
+          <div className="divide-y divide-slate-700 text-sm">
+            {order.items.map((item) => (
+              <div key={item.id} className="py-3 flex justify-between">
+                <span>
+                  {item.qty} × {item.name}
+                </span>
+                <span>£{(item.qty * item.pricing.table).toFixed(2)}</span>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Items */}
-        <div className="divide-y divide-slate-700">
-          {order.items.map((item) => (
-            <div key={item.id} className="py-3 flex justify-between text-sm">
-              <span>
-                {item.qty} × {item.name}
-              </span>
-              <span>£{(item.qty * item.pricing.table).toFixed(2)}</span>
-            </div>
-          ))}
-        </div>
+        {/* Payment Panel */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold">Payment & Discount</h2>
 
-        {/* Discount */}
-        <div className="space-y-4 border-t border-slate-700 pt-4">
+          {/* Payment method */}
           <div>
-            <label className="block font-semibold">Payment Method</label>
-            <div className="flex gap-4 mt-2">
+            <label className="block font-semibold mb-1">Payment Method</label>
+            <div className="flex gap-4">
               {["cash", "card"].map((method) => (
                 <button
                   key={method}
                   onClick={() => setPaymentMethod(method)}
-                  className={`px-4 py-2 rounded-full border ${
+                  className={`px-4 py-2 rounded-full border text-sm transition ${
                     paymentMethod === method
                       ? "bg-blue-600 text-white"
                       : "bg-slate-700 text-slate-300"
@@ -134,15 +136,16 @@ const TableBill = () => {
             </div>
           </div>
 
+          {/* Discount options */}
           <div>
-            <label className="block font-semibold">Apply Discount</label>
+            <label className="block font-semibold mb-1">Discount</label>
             <select
               value={discountType}
               onChange={(e) => {
                 setDiscountType(e.target.value);
                 setDiscountValue(0);
               }}
-              className="w-full p-2 rounded bg-slate-700 text-white mt-2"
+              className="w-full p-2 rounded bg-slate-700 text-white"
             >
               <option value="none">None</option>
               <option value="percent">Staff/Manager % Discount</option>
@@ -165,35 +168,32 @@ const TableBill = () => {
               />
             )}
           </div>
-        </div>
 
-        {/* Totals */}
-        <div className="space-y-2 text-sm border-t border-slate-700 pt-4">
-          <div className="flex justify-between">
-            <span>Subtotal</span>
-            <span>£{subtotal.toFixed(2)}</span>
-          </div>
-          {discountAmount > 0 && (
-            <div className="flex justify-between text-red-400">
-              <span>Discount</span>
-              <span>-£{discountAmount.toFixed(2)}</span>
+          {/* Totals */}
+          <div className="space-y-2 border-t border-slate-600 pt-4 text-sm">
+            <div className="flex justify-between">
+              <span>Subtotal</span>
+              <span>£{subtotal.toFixed(2)}</span>
             </div>
-          )}
-          <div className="flex justify-between">
-            <span>Tax (10%)</span>
-            <span>£{taxedAmount.toFixed(2)}</span>
+            {discountAmount > 0 && (
+              <div className="flex justify-between text-red-400">
+                <span>Discount</span>
+                <span>-£{discountAmount.toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex justify-between">
+              <span>Tax (10%)</span>
+              <span>£{taxedAmount.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between font-bold text-lg pt-2 border-t border-dashed border-slate-500 mt-2">
+              <span>Total</span>
+              <span>£{total.toFixed(2)}</span>
+            </div>
           </div>
-          <div className="flex justify-between font-semibold text-lg pt-2 border-t border-dashed border-slate-600 mt-2">
-            <span>Total</span>
-            <span>£{total.toFixed(2)}</span>
-          </div>
-        </div>
 
-        {/* Confirm Payment */}
-        <div className="pt-4 border-t border-slate-700">
           <button
-            className="w-full bg-green-500 hover:bg-green-600 transition-colors text-black py-2 rounded-full font-semibold"
             onClick={handleConfirmPayment}
+            className="w-full bg-green-500 hover:bg-green-600 text-black py-2 rounded-full font-semibold mt-4"
           >
             Confirm Payment
           </button>
